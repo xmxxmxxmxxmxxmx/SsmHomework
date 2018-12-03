@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="GBK" ?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd">
+	<!-- 指定spring哪个包下面的开启注解扫描 -->
+	<context:component-scan base-package="com.ssm" />
+
+	<!-- 数据库连接池 池子里放了若干个数据库连接,有用户需要从池里面取,用完了就放回来 -->
+	<!-- 数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"             value="jdbc:mysql://localhost:3306/ssmhomework?useUnicode=true&amp;characterEncoding=utf-8" />
+		<property name="username"        value="root" />
+		<property name="password"        value="123456" />
+	</bean>
+
+
+	<!-- sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 数据库连接池 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动配置别名 -->
+		<property name="typeAliasesPackage" value="com.ssm.model"></property>
+		<!-- 加载mybatis的全局配置文件 -->
+		<property name="configLocation" value="classpath:sqlMapConfig.xml" />
+		<!-- 分页查询插件 -->
+		<property name="plugins">
+    		<array>
+    		    <!-- 分页插件 -->
+      			<bean class="com.github.pagehelper.PageInterceptor">
+       				 <property name="properties">
+         			 <!-- config params as the following -->
+	          			<value>
+	           				 param1=mysql
+	          			</value>
+       				 </property>
+      			</bean>
+    		</array>
+  		</property>
+	</bean>
+
+	<!-- mapper扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描包路径，如果需要扫描多个包，中间使用半角逗号隔开 -->
+		<property name="basePackage" value="com.ssm.mapper"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+
+
+
+
+</beans>
